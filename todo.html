@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+</head>
+
+<body style="background: linear-gradient(to right, #2193b0 0%, #d29446 100%);">
+    <section>
+        <h1>To-Do List</h1>
+        <ul id="taskList"></ul>
+    </section>
+    <div>
+        <input type="text" id="taskInput" placeholder="Enter a task...">
+        <button id="addTaskButton">Add Task</button>
+    </div>
+    <script>
+        const inputValue = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+
+        let localTodoLists = JSON.parse(localStorage.getItem("youtubeTodoList")) || [];
+
+
+        const renderTodo = (text) => {
+            const divElement = document.createElement("div");
+            divElement.classList.add("main-todo-div");
+            divElement.innerHTML = `<li>${text}</li><button class="Delete-Button" onclick="removeElements('${text}', this.parentElement)"">Delete</button>`;
+            taskList.appendChild(divElement);
+        };
+
+        // Render saved todos on page load
+        localTodoLists.forEach(renderTodo);
+
+        const addTodoList = (e) => {
+            e.preventDefault();
+            const todoListValue = inputValue.value.trim();
+            if (todoListValue != "" && !localTodoLists.includes(todoListValue)) {
+                localTodoLists.push(todoListValue);
+                localTodoLists = [...new Set(localTodoLists)];
+                console.log("Local Todo list");
+                localStorage.setItem(
+                    "youtubeTodoList",
+                    JSON.stringify(localTodoLists)
+                );
+                renderTodo(todoListValue);
+            }
+            inputValue.value = "";
+        };
+        const removeElements = (todoListValue, element) => {
+            localTodoLists = localTodoLists.filter(item => item !== todoListValue); // remove from array
+            console.log("remove :", todoListValue);
+            localStorage.setItem("youtubeTodoList", JSON.stringify(localTodoLists)); // update storage
+            element.remove(); // remove from DOM
+        };
+
+
+        document.getElementById("addTaskButton").addEventListener("click", addTodoList);
+
+
+        inputValue.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                addTodoList(e);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
